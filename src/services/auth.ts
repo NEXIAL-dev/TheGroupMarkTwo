@@ -5,10 +5,6 @@ export interface SignUpData {
   email: string;
   password: string;
   full_name: string;
-  base_roles?: string[];
-  agency_roles?: string[];
-  agency_name?: string;
-  profile_image?: File;
 }
 
 export interface SignInData {
@@ -49,24 +45,11 @@ export const AuthService = {
       options: {
         data: {
           full_name: data.full_name,
-          base_roles: data.base_roles || ["Core Member"],
-          agency_roles: data.agency_roles || [],
-          agency_name: data.agency_name,
         },
       },
     });
 
     if (authError) throw authError;
-
-    // Upload profile image if provided
-    if (data.profile_image && authData.user) {
-      try {
-        await uploadProfileImage(data.profile_image, authData.user.id);
-      } catch (error) {
-        console.error("Error uploading profile image:", error);
-        // Don't fail signup if image upload fails
-      }
-    }
 
     // Profile will be created automatically via trigger
     return authData;

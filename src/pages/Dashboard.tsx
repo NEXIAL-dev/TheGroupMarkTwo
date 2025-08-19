@@ -123,7 +123,7 @@ export default function Dashboard() {
               <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 text-sm">{task.title}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500">{agency?.members?.length || 0} members</p>
                     {task.dueAt && `Due: ${new Date(task.dueAt).toLocaleDateString()}`}
                   </p>
                 </div>
