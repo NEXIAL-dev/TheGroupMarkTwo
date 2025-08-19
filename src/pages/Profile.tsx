@@ -195,7 +195,7 @@ export default function Profile() {
             <div className="relative">
               {user.profile_pic ? (
                 <img
-                  src={user.avatar_url || user.profile_pic}
+                  src={user.profile_pic}
                   alt={user.full_name}
                   className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                 />
