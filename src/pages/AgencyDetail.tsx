@@ -48,7 +48,7 @@ export default function AgencyDetail() {
             <h3 className="font-semibold text-gray-900">Members</h3>
           </div>
           <p className="text-2xl font-bold text-gray-900">
-            {agency.memeber_id.length}
+            {agency.members?.length || 0}
           </p>
           <p className="text-sm text-gray-500">Active members</p>
         </div>
