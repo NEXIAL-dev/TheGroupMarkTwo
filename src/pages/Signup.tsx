@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/stores/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
-import { Building, Mail, Lock, User, Users } from 'lucide-react';
+import { Building, Mail, Lock, User, Users, LogIn } from 'lucide-react';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
