@@ -6,13 +6,14 @@ import Sidebar from '@/components/layout/Sidebar';
 import Topbar from '@/components/layout/Topbar';
 
 export default function App() {
-  const { user, isLoading, initialize } = useAuth();
+  const { user, isLoading, isInitialized, initialize } = useAuth();
 
   useEffect(() => {
     initialize();
   }, [initialize]);
 
-  if (isLoading) {
+  // Show loading only if we haven't initialized yet
+  if (!isInitialized || isLoading) {
     return (
       <div className="h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -23,6 +24,7 @@ export default function App() {
     );
   }
 
+  // Only redirect if we're initialized and definitely have no user
   if (!user) {
     return <Navigate to="/login" replace />;
   }
