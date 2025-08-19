@@ -13,7 +13,8 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
-    await signIn({ email, password });
+    await signIn({ email, password });  
+    navigate('/');
   };
 
   // Clear error when inputs change
