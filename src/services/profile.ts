@@ -38,12 +38,9 @@ export const ProfileService = {
     const fileExt = file.name.split('.').pop();
     const fileName = `${userId}/${type}_${Date.now()}.${fileExt}`;
 
-    const { data, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('profiles')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: true, // Allow overwriting existing files
-      });
+      .upload(fileName, file);
 
     if (uploadError) throw uploadError;
 
@@ -52,7 +49,8 @@ export const ProfileService = {
       .getPublicUrl(fileName);
 
     // Update user profile with new image URL
-    const updateField = `${type}_pic` as keyof UpdateProfileData;
+    const updateField = type === 'profile' ? 'profile_pic' : 
+                       type === 'background' ? 'background_pic' : 'theme_pic';
     
     await this.updateProfile(userId, { [updateField]: publicUrl });
 
