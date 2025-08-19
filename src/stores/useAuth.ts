@@ -1,48 +1,82 @@
 // src/stores/useAuth.ts
 import { create } from 'zustand';
 import { User } from '@/types/models';
+import { AuthService, SignUpData, SignInData } from '@/services/auth';
+import { supabase } from '@/lib/supabase';
 
 interface AuthState {
   user?: User;
-  token?: string;
   isLoading: boolean;
   error?: string;
-  login: (email: string, password: string) => Promise<void>;
+  signUp: (data: SignUpData) => Promise<void>;
+  signIn: (data: SignInData) => Promise<void>;
+  signOut: () => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
+  initialize: () => Promise<void>;
 }
 
-export const useAuth = create<AuthState>((set) => ({
+export const useAuth = create<AuthState>((set, get) => ({
   user: undefined,
-  token: undefined,
   isLoading: false,
   error: undefined,
-  login: async (email, password) => {
+  
+  signUp: async (data) => {
     set({ isLoading: true, error: undefined });
     try {
-      // Mock login - replace with actual API call
-      const mockUser: User = {
-        id: 'u1',
-        name: 'Darshan Patel',
-        email,
-        baseRoles: ['CORE_MEMBER', 'AGENCY_OWNER'],
-        agencyRoles: [
-          { agencyId: 'a1', roles: ['OWNER'] },
-          { agencyId: 'a2', roles: ['OWNER'] }
-        ],
-        avatarUrl: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1',
-      };
-      const mockToken = 'mock-jwt-token';
-      
-      localStorage.setItem('auth_token', mockToken);
-      set({ user: mockUser, token: mockToken, isLoading: false });
-    } catch (error) {
-      set({ error: 'Login failed', isLoading: false });
+      await AuthService.signUp(data);
+      set({ isLoading: false });
+    } catch (error: any) {
+      set({ error: error.message, isLoading: false });
     }
   },
-  logout: () => {
-    localStorage.removeItem('auth_token');
-    set({ user: undefined, token: undefined });
+
+  signIn: async (data) => {
+    set({ isLoading: true, error: undefined });
+    try {
+      const result = await AuthService.signIn(data);
+      if (result.profile) {
+        set({ user: result.profile, isLoading: false });
+      }
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
   },
+
+  signOut: async () => {
+    try {
+      await AuthService.signOut();
+      set({ user: undefined });
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  },
+
+  logout: () => {
+    get().signOut();
+  },
+
   setUser: (user) => set({ user }),
+
+  initialize: async () => {
+    set({ isLoading: true });
+    try {
+      const user = await AuthService.getCurrentUser();
+      set({ user: user || undefined, isLoading: false });
+    } catch (error) {
+      console.error('Auth initialization error:', error);
+      set({ isLoading: false });
+    }
+  },
 }));
+
+// Listen for auth state changes
+supabase.auth.onAuthStateChange(async (event, session) => {
+  const { initialize } = useAuth.getState();
+  
+  if (event === 'SIGNED_IN' && session?.user) {
+    await initialize();
+  } else if (event === 'SIGNED_OUT') {
+    useAuth.setState({ user: undefined });
+  }
+});

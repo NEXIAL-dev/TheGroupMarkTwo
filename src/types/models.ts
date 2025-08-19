@@ -1,19 +1,19 @@
 // src/types/models.ts
-export type RoleBase = 'CORE_MEMBER' | 'AGENCY_OWNER';       // base roles (non-exclusive)
-export type AgencyRole = 'OWNER' | 'ADMIN' | 'MEMBER';        // future-ready
+export type RoleBase = 'Core Member' | 'Agency Owner';       // base roles (non-exclusive)
+export type AgencyRole = 'Owner' | 'Manager' | 'HR' | 'Admin' | 'Member';        // future-ready
 
 export interface User {
   id: string;
-  name: string;
-  avatarUrl?: string;
-  backgroundUrl?: string;
+  full_name: string;
+  avatar_url?: string;
+  background_img?: string;
   themeUrl?: string;
-  baseRoles: RoleBase[];            // e.g. ['CORE_MEMBER','AGENCY_OWNER']
-  agencyRoles: { agencyId: string; roles: AgencyRole[] }[]; // owner now, flexible later
+  base_roles: RoleBase[];            // e.g. ['Core Member','Agency Owner']
+  agency_role: AgencyRole[];         // ['Owner', 'Manager', etc.]
+  agency_name?: string;              // the agency user belongs to
   email: string;
-  // Never store plaintext; backend returns tokens only. Shown here for shape parity.
-  passwordHash?: string;
-  agencyPasswordHash?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Agency {
