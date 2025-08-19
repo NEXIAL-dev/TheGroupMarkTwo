@@ -1,13 +1,11 @@
 // src/types/models.ts
-export type BaseRole = 'Core Member' | 'Agency Owner';
-export type AgencyRole = 'Owner' | 'Manager' | 'CFO' | 'HR' | 'Admin' | 'Member';
+export type UserRole = 'Core Member' | 'Agency Owner';
 export type AgencyStatus = 'Open to Work' | 'Busy' | 'Break/Vacation' | 'Holiday';
 
 export interface User {
   id: string;
   full_name: string;
-  base_roles: BaseRole[];
-  agency_roles: AgencyRole[];
+  role: UserRole;
   agency_id?: string;
   profile_pic?: string;
   background_pic?: string;

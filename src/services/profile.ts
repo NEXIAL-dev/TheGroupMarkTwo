@@ -1,10 +1,9 @@
 import { supabase } from '@/lib/supabase';
-import { User, Agency, AgencyMember, AgencyWithMembers, BaseRole, AgencyRole } from '@/types/models';
+import { User, Agency, AgencyMember, AgencyWithMembers } from '@/types/models';
 
 export interface UpdateProfileData {
   full_name?: string;
-  base_roles?: BaseRole[];
-  agency_roles?: AgencyRole[];
+  role?: 'Core Member' | 'Agency Owner';
   profile_pic?: string;
   background_pic?: string;
   theme_pic?: string;

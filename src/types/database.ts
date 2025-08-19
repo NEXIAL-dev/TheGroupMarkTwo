@@ -13,8 +13,7 @@ export interface Database {
         Row: {
           id: string
           full_name: string
-          base_roles: string[]
-          agency_roles: string[]
+          role: string
           agency_id: string | null
           profile_pic: string | null
           background_pic: string | null
@@ -22,6 +21,8 @@ export interface Database {
           avatar_url: string | null
           background_img: string | null
           theme_url: string | null
+          base_roles: string[]
+          agency_role: string[]
           agency_name: string | null
           created_at: string
           updated_at: string
@@ -29,8 +30,7 @@ export interface Database {
         Insert: {
           id: string
           full_name: string
-          base_roles?: string[]
-          agency_roles?: string[]
+          role?: string
           agency_id?: string | null
           profile_pic?: string | null
           background_pic?: string | null
@@ -38,6 +38,8 @@ export interface Database {
           avatar_url?: string | null
           background_img?: string | null
           theme_url?: string | null
+          base_roles?: string[]
+          agency_role?: string[]
           agency_name?: string | null
           created_at?: string
           updated_at?: string
@@ -45,8 +47,7 @@ export interface Database {
         Update: {
           id?: string
           full_name?: string
-          base_roles?: string[]
-          agency_roles?: string[]
+          role?: string
           agency_id?: string | null
           profile_pic?: string | null
           background_pic?: string | null
@@ -54,6 +55,8 @@ export interface Database {
           avatar_url?: string | null
           background_img?: string | null
           theme_url?: string | null
+          base_roles?: string[]
+          agency_role?: string[]
           agency_name?: string | null
           created_at?: string
           updated_at?: string
