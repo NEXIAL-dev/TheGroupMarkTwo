@@ -5,8 +5,10 @@ export interface SignUpData {
   email: string;
   password: string;
   full_name: string;
-  role?: 'Core Member' | 'Agency Owner';
+  base_roles?: string[];
+  agency_roles?: string[];
   agency_name?: string;
+  profile_image?: File;
 }
 
 export interface SignInData {
@@ -22,13 +24,24 @@ export const AuthService = {
       options: {
         data: {
           full_name: data.full_name,
-          role: data.role || 'Core Member',
+          base_roles: data.base_roles || ['Core Member'],
+          agency_roles: data.agency_roles || [],
           agency_name: data.agency_name,
         },
       },
     });
 
     if (authError) throw authError;
+
+    // Upload profile image if provided
+    if (data.profile_image && authData.user) {
+      try {
+        await this.uploadProfileImage(authData.user.id, data.profile_image);
+      } catch (error) {
+        console.error('Error uploading profile image:', error);
+        // Don't fail signup if image upload fails
+      }
+    }
 
     // Profile will be created automatically via trigger
     return authData;
@@ -74,8 +87,6 @@ export const AuthService = {
     return {
       ...data,
       email: authUser.user?.email || '',
-      // Map old fields to new structure for backward compatibility
-      role: data.role || 'Core Member',
       profile_pic: data.profile_pic || data.avatar_url,
       background_pic: data.background_pic || data.background_img,
       theme_pic: data.theme_pic || data.theme_url,
@@ -100,5 +111,25 @@ export const AuthService = {
     if (!user) return null;
     
     return this.getProfile(user.id);
+  },
+
+  async uploadProfileImage(userId: string, file: File) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}/profile_${Date.now()}.${fileExt}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('profiles')
+      .upload(fileName, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('profiles')
+      .getPublicUrl(fileName);
+
+    // Update user profile with new image URL
+    await this.updateProfile(userId, { profile_pic: publicUrl });
+
+    return publicUrl;
   },
 };

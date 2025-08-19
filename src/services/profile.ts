@@ -3,7 +3,8 @@ import { User, Agency, AgencyMember, AgencyWithMembers } from '@/types/models';
 
 export interface UpdateProfileData {
   full_name?: string;
-  role?: 'Core Member' | 'Agency Owner';
+  base_roles?: string[];
+  agency_roles?: string[];
   profile_pic?: string;
   background_pic?: string;
   theme_pic?: string;
