@@ -9,6 +9,7 @@ export default function Signup() {
     password: '',
     confirmPassword: '',
     full_name: '',
+    role: 'Core Member' as const,
     agency_name: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
@@ -26,6 +27,7 @@ export default function Signup() {
       email: formData.email,
       password: formData.password,
       full_name: formData.full_name,
+      role: formData.role,
       agency_name: formData.agency_name || undefined,
     });
 
@@ -117,8 +119,27 @@ export default function Signup() {
             </div>
 
             <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                Role
+              </label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200"
+                >
+                  <option value="Core Member">Core Member</option>
+                  <option value="Agency Owner">Agency Owner</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
               <label htmlFor="agency_name" className="block text-sm font-medium text-gray-700 mb-2">
-                Agency Name (Optional)
+                Agency Name {formData.role === 'Agency Owner' ? '(Recommended)' : '(Optional)'}
               </label>
               <div className="relative">
                 <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
