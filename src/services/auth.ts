@@ -115,7 +115,7 @@ export const AuthService = {
 
   async uploadProfileImage(userId: string, file: File) {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}/avatar.${fileExt}`;
+    const fileName = `${userId}/profile_${Date.now()}.${fileExt}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('profiles')
@@ -128,7 +128,7 @@ export const AuthService = {
       .getPublicUrl(fileName);
 
     // Update user profile with new image URL
-    await this.updateProfile(userId, { avatar_url: publicUrl });
+    await this.updateProfile(userId, { profile_pic: publicUrl });
 
     return publicUrl;
   },
