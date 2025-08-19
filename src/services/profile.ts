@@ -36,11 +36,13 @@ export const ProfileService = {
 
   async uploadProfileImage(userId: string, file: File, type: 'profile' | 'background' | 'theme') {
     const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}/${type}_${Date.now()}.${fileExt}`;
+    const fileName = `${userId}/${type === 'profile' ? 'avatar' : type}.${fileExt}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('profiles')
-      .upload(fileName, file);
+      .upload(fileName, file, {
+        upsert: true // This will overwrite existing files with the same name
+      });
 
     if (uploadError) throw uploadError;
 
@@ -49,8 +51,8 @@ export const ProfileService = {
       .getPublicUrl(fileName);
 
     // Update user profile with new image URL
-    const updateField = type === 'profile' ? 'profile_pic' : 
-                       type === 'background' ? 'background_pic' : 'theme_pic';
+    const updateField = type === 'profile' ? 'avatar_url' : 
+                       type === 'background' ? 'background_img' : 'theme_url';
     
     await this.updateProfile(userId, { [updateField]: publicUrl });
 

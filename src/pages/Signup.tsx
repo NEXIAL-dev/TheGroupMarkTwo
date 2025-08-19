@@ -103,13 +103,15 @@ export default function Signup() {
   };
 
   const handleImageFile = (file: File) => {
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) { // 5MB limit
       setProfileImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfileImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+    } else {
+      alert('Please select an image file under 5MB');
     }
   };
 

@@ -116,8 +116,11 @@ export default function Sidebar() {
                   className="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors duration-200"
                 >
                   <Building size={16} />
-                  <span className="truncate">{agency.name}</span>
+              {user.base_roles?.map((role) => (
                 </Link>
+              ))}
+              {user.agency_roles?.map((role) => (
+                <RoleBadge key={`agency-${role}`} role={role} />
               ))}
             </div>
           </div>

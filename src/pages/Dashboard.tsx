@@ -81,8 +81,11 @@ export default function Dashboard() {
               <h2 className="text-xl font-semibold text-gray-900">{user.full_name}</h2>
               <p className="text-gray-600 mb-2">{user.email}</p>
               <div className="flex flex-wrap gap-2">
-                {user.base_roles.map((role) => (
+                {user.base_roles?.map((role) => (
                   <RoleBadge key={role} role={role} size="md" />
+                ))}
+                {user.agency_roles?.map((role) => (
+                  <RoleBadge key={`agency-${role}`} role={role} size="md" />
                 ))}
                 {user.agency_name && (
                   <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">

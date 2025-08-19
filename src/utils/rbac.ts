@@ -3,10 +3,13 @@ import { User, Agency } from '@/types/models';
 
 export const isCoreMember = (u?: User) => !!u?.base_roles?.includes('Core Member');
 
-export const isAgencyOwner = (u?: User, agencyId?: string) =>
-  !!u?.agency_roles?.includes('Owner') && 
-  (agencyId ? u?.agency_id === agencyId : true) ||
-  u?.base_roles?.includes('Agency Owner');
+export const isAgencyOwner = (u?: User, agencyId?: string) => {
+  const hasAgencyOwnerBaseRole = u?.base_roles?.includes('Agency Owner');
+  const hasOwnerAgencyRole = u?.agency_roles?.includes('Owner');
+  const isCorrectAgency = agencyId ? u?.agency_id === agencyId : true;
+  
+  return (hasAgencyOwnerBaseRole || hasOwnerAgencyRole) && isCorrectAgency;
+};
 
 export const canPostGroupNotice = isCoreMember;
 
