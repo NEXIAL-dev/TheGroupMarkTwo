@@ -19,7 +19,7 @@ export const useAgencies = create<AgencyState>((set) => ({
       { id: 'a2', name: 'Digital Innovations', ownerId: 'u1', memberIds: ['u1', 'u5'] },
       { id: 'a3', name: 'Creative Solutions', ownerId: 'u2', memberIds: ['u2', 'u6'] },
       { id: 'a4', name: 'Growth Partners', ownerId: 'u3', memberIds: ['u3', 'u7'] },
-    ].map(agency => ({ ...agency, status: 'Open to Work' as const, recent_activity: [], created_at: new Date().toISOString() }));
+    ];
     set({ agencies: mockAgencies, isLoading: false });
   },
 }));

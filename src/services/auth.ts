@@ -5,8 +5,7 @@ export interface SignUpData {
   email: string;
   password: string;
   full_name: string;
-  base_roles?: string[];
-  agency_roles?: string[];
+  role?: 'Core Member' | 'Agency Owner';
   agency_name?: string;
 }
 
@@ -23,8 +22,7 @@ export const AuthService = {
       options: {
         data: {
           full_name: data.full_name,
-          base_roles: data.base_roles || ['Core Member'],
-          agency_roles: data.agency_roles || [],
+          role: data.role || 'Core Member',
           agency_name: data.agency_name,
         },
       },
@@ -76,9 +74,8 @@ export const AuthService = {
     return {
       ...data,
       email: authUser.user?.email || '',
-      // Ensure arrays exist
-      base_roles: data.base_roles || ['Core Member'],
-      agency_roles: data.agency_roles || [],
+      // Map old fields to new structure for backward compatibility
+      role: data.role || 'Core Member',
       profile_pic: data.profile_pic || data.avatar_url,
       background_pic: data.background_pic || data.background_img,
       theme_pic: data.theme_pic || data.theme_url,
