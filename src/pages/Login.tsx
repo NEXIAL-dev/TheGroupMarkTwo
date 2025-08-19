@@ -5,8 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Building, Mail, Lock, LogIn } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@businesshub.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { signIn, isLoading, error } = useAuth();
   const navigate = useNavigate();
 
