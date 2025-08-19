@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/stores/useAuth';
 import { ProfileService } from '@/services/profile';
-import { Agency, AgencyWithMembers } from '@/types/models';
+import { Agency, AgencyWithMembers, BaseRole, AgencyRole } from '@/types/models';
 import { 
   User, 
   Camera, 
@@ -25,7 +25,8 @@ export default function Profile() {
   
   const [formData, setFormData] = useState({
     full_name: user?.full_name || '',
-    role: user?.role || 'Core Member' as const,
+    base_roles: user?.base_roles || ['Core Member'],
+    agency_roles: user?.agency_roles || [],
     profile_pic: user?.profile_pic || '',
     background_pic: user?.background_pic || '',
     theme_pic: user?.theme_pic || '',
@@ -60,7 +61,8 @@ export default function Profile() {
     try {
       const updatedProfile = await ProfileService.updateProfile(user.id, {
         full_name: formData.full_name,
-        role: formData.role,
+        base_roles: formData.base_roles,
+        agency_roles: formData.agency_roles,
       });
       
       setUser({ ...user, ...updatedProfile });
@@ -234,17 +236,67 @@ export default function Profile() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Role
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Base Roles
                     </label>
-                    <select
-                      value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    >
-                      <option value="Core Member">Core Member</option>
-                      <option value="Agency Owner">Agency Owner</option>
-                    </select>
+                    <div className="space-y-2">
+                      {(['Core Member', 'Agency Owner'] as BaseRole[]).map((role) => (
+                        <label key={role} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={formData.base_roles.includes(role)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({ 
+                                  ...formData, 
+                                  base_roles: [...formData.base_roles, role]
+                                });
+                              } else {
+                                setFormData({ 
+                                  ...formData, 
+                                  base_roles: formData.base_roles.filter(r => r !== role)
+                                });
+                              }
+                            }}
+                            className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">{role}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  {formData.base_roles.includes('Agency Owner') && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Agency Roles
+                      </label>
+                      <div className="space-y-2">
+                        {(['Owner', 'Manager', 'CFO', 'HR', 'Admin', 'Member'] as AgencyRole[]).map((role) => (
+                          <label key={role} className="flex items-center">
+                            <input
+                              type="checkbox"
+                              checked={formData.agency_roles.includes(role)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFormData({ 
+                                    ...formData, 
+                                    agency_roles: [...formData.agency_roles, role]
+                                  });
+                                } else {
+                                  setFormData({ 
+                                    ...formData, 
+                                    agency_roles: formData.agency_roles.filter(r => r !== role)
+                                  });
+                                }
+                              }}
+                              className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-sm text-gray-700">{role}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   </div>
                   <button
                     onClick={handleSaveProfile}
@@ -259,13 +311,14 @@ export default function Profile() {
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">{user.full_name}</h2>
                   <p className="text-gray-600 mb-2">{user.email}</p>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                    user.role === 'Agency Owner' 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {user.role}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {user.base_roles.map((role) => (
+                      <RoleBadge key={role} role={role} size="md" />
+                    ))}
+                    {user.agency_roles.map((role) => (
+                      <RoleBadge key={role} role={role} size="md" />
+                    <p className="text-xs text-gray-500">{agency.memberIds?.length || 0} members</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -280,7 +333,7 @@ export default function Profile() {
             <Building className="w-5 h-5" />
             Agency Information
           </h3>
-          {user.role === 'Agency Owner' && !agency && (
+          {user.base_roles.includes('Agency Owner') && !agency && (
             <button
               onClick={() => setShowCreateAgency(true)}
               className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center gap-2"
@@ -299,7 +352,7 @@ export default function Profile() {
                 <h4 className="font-medium text-gray-900 mb-2">{agency.name}</h4>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm text-gray-600">Status:</span>
-                  {user.role === 'Agency Owner' ? (
+                  {user.base_roles.includes('Agency Owner') || user.agency_roles.includes('Owner') ? (
                     <select
                       value={agency.status}
                       onChange={(e) => handleUpdateAgencyStatus(e.target.value)}
@@ -344,7 +397,7 @@ export default function Profile() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h5 className="font-medium text-gray-900">Recent Activity</h5>
-                {user.role === 'Agency Owner' && (
+                {(user.base_roles.includes('Agency Owner') || user.agency_roles.includes('Owner') || user.agency_roles.includes('Manager')) && (
                   <button
                     onClick={() => {
                       const activity = prompt('Enter new activity:');
@@ -370,7 +423,7 @@ export default function Profile() {
               </div>
             </div>
           </div>
-        ) : user.role === 'Agency Owner' ? (
+        ) : user.base_roles.includes('Agency Owner') ? (
           <div className="text-center py-8 text-gray-500">
             <Building size={48} className="mx-auto mb-2 text-gray-300" />
             <p>You haven't created an agency yet</p>

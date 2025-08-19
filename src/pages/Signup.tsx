@@ -9,7 +9,8 @@ export default function Signup() {
     password: '',
     confirmPassword: '',
     full_name: '',
-    role: 'Core Member' as const,
+    base_roles: ['Core Member'] as BaseRole[],
+    agency_roles: [] as AgencyRole[],
     agency_name: '',
   });
   const [showSuccess, setShowSuccess] = useState(false);
@@ -27,7 +28,8 @@ export default function Signup() {
       email: formData.email,
       password: formData.password,
       full_name: formData.full_name,
-      role: formData.role,
+      base_roles: formData.base_roles,
+      agency_roles: formData.agency_roles,
       agency_name: formData.agency_name || undefined,
     });
 
@@ -119,27 +121,79 @@ export default function Signup() {
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-                Role
+              <label htmlFor="base_roles" className="block text-sm font-medium text-gray-700 mb-2">
+                Base Roles
               </label>
-              <div className="relative">
-                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200"
-                >
-                  <option value="Core Member">Core Member</option>
-                  <option value="Agency Owner">Agency Owner</option>
-                </select>
+              <div className="space-y-2">
+                {(['Core Member', 'Agency Owner'] as BaseRole[]).map((role) => (
+                  <label key={role} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.base_roles.includes(role)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData({ 
+                            ...formData, 
+                            base_roles: [...formData.base_roles, role],
+                            // Auto-add Owner role if Agency Owner is selected
+                            agency_roles: role === 'Agency Owner' && !formData.agency_roles.includes('Owner')
+                              ? [...formData.agency_roles, 'Owner']
+                              : formData.agency_roles
+                          });
+                        } else {
+                          setFormData({ 
+                            ...formData, 
+                            base_roles: formData.base_roles.filter(r => r !== role),
+                            // Remove Owner role if Agency Owner is deselected
+                            agency_roles: role === 'Agency Owner'
+                              ? formData.agency_roles.filter(r => r !== 'Owner')
+                              : formData.agency_roles
+                          });
+                        }
+                      }}
+                      className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">{role}</span>
+                  </label>
+                ))}
               </div>
             </div>
 
+            {formData.base_roles.includes('Agency Owner') && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Agency Roles
+                </label>
+                <div className="space-y-2">
+                  {(['Owner', 'Manager', 'CFO', 'HR', 'Admin'] as AgencyRole[]).map((role) => (
+                    <label key={role} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={formData.agency_roles.includes(role)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setFormData({ 
+                              ...formData, 
+                              agency_roles: [...formData.agency_roles, role]
+                            });
+                          } else {
+                            setFormData({ 
+                              ...formData, 
+                              agency_roles: formData.agency_roles.filter(r => r !== role)
+                            });
+                          }
+                        }}
+                        className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{role}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
             <div>
               <label htmlFor="agency_name" className="block text-sm font-medium text-gray-700 mb-2">
-                Agency Name {formData.role === 'Agency Owner' ? '(Recommended)' : '(Optional)'}
+                Agency Name {formData.base_roles.includes('Agency Owner') ? '(Recommended)' : '(Optional)'}
               </label>
               <div className="relative">
                 <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
