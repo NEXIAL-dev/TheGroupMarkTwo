@@ -17,6 +17,8 @@ export default function RoleBadge({ role, size = 'sm' }: RoleBadgeProps) {
         return 'bg-green-100 text-green-800 border-green-200';
       case 'Manager':
         return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'CFO':
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       case 'HR':
         return 'bg-pink-100 text-pink-800 border-pink-200';
       case 'Admin':
