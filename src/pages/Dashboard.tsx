@@ -66,24 +66,30 @@ export default function Dashboard() {
       {user && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
           <div className="flex items-center gap-4">
-            {user.avatarUrl ? (
+            {user.avatar_url ? (
               <img
-                src={user.avatarUrl}
-                alt={user.name}
+                src={user.avatar_url}
+                alt={user.full_name}
                 className="w-16 h-16 rounded-full object-cover"
               />
             ) : (
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                {user.name.charAt(0)}
+                {user.full_name.charAt(0)}
               </div>
             )}
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">{user.name}</h2>
+              <h2 className="text-xl font-semibold text-gray-900">{user.full_name}</h2>
               <p className="text-gray-600 mb-2">{user.email}</p>
               <div className="flex flex-wrap gap-2">
-                {user.baseRoles.map((role) => (
+                {user.base_roles.map((role) => (
                   <RoleBadge key={role} role={role} size="md" />
                 ))}
+                {user.agency_name && (
+                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                    <Building size={12} />
+                    {user.agency_name}
+                  </div>
+                )}
               </div>
             </div>
           </div>

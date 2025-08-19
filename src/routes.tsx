@@ -2,6 +2,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/Login';
+import Signup from '@/pages/Signup';
 import Messages from '@/pages/Messages';
 import Logs from '@/pages/Logs';
 import Tasks from '@/pages/Tasks';
@@ -12,6 +13,7 @@ import App from '@/App';
 
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
+  { path: '/signup', element: <Signup /> },
   {
     path: '/',
     element: <App />, // contains Sidebar/Topbar + <Outlet/>

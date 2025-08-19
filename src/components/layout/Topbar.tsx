@@ -9,7 +9,7 @@ export default function Topbar() {
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
         <h2 className="text-xl font-semibold text-gray-900">
-          Welcome back, {user?.name?.split(' ')[0]}!
+          Welcome back, {user?.full_name?.split(' ')[0]}!
         </h2>
       </div>
 
@@ -26,15 +26,15 @@ export default function Topbar() {
 
         {/* User Menu */}
         <div className="flex items-center gap-3">
-          {user?.avatarUrl && (
+          {user?.avatar_url && (
             <img
-              src={user.avatarUrl}
-              alt={user.name}
+              src={user.avatar_url}
+              alt={user.full_name}
               className="w-8 h-8 rounded-full object-cover"
             />
           )}
           <button
-            onClick={logout}
+            onClick={() => logout()}
             className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
             title="Logout"
           >

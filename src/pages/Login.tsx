@@ -1,19 +1,21 @@
 // src/pages/Login.tsx
 import { useState } from 'react';
 import { useAuth } from '@/stores/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Building, Mail, Lock, LogIn } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('admin@businesshub.com');
   const [password, setPassword] = useState('password123');
-  const { login, isLoading, error } = useAuth();
+  const { signIn, isLoading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
-    navigate('/');
+    await signIn({ email, password });
+    if (!error) {
+      navigate('/');
+    }
   };
 
   return (
@@ -89,10 +91,13 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Demo Info */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 text-center">
-              Demo credentials are pre-filled. Click "Sign In" to continue.
+          {/* Sign Up Link */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+                Sign up here
+              </Link>
             </p>
           </div>
         </div>
