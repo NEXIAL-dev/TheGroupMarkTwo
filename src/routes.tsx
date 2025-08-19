@@ -9,6 +9,7 @@ import Tasks from '@/pages/Tasks';
 import Notices from '@/pages/Notices';
 import Ledger from '@/pages/Ledger';
 import AgencyDetail from '@/pages/AgencyDetail';
+import Profile from '@/pages/Profile';
 import App from '@/App';
 
 export const router = createBrowserRouter([
@@ -25,6 +26,7 @@ export const router = createBrowserRouter([
       { path: 'notices', element: <Notices /> },
       { path: 'ledger', element: <Ledger /> },
       { path: 'agencies/:id', element: <AgencyDetail /> },
+      { path: 'profile', element: <Profile /> },
     ],
   },
 ]);

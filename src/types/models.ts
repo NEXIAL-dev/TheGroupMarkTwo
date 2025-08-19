@@ -1,15 +1,18 @@
 // src/types/models.ts
-export type RoleBase = 'Core Member' | 'Agency Owner';       // base roles (non-exclusive)
-export type AgencyRole = 'Owner' | 'Manager' | 'HR' | 'Admin' | 'Member';        // future-ready
+export type UserRole = 'Core Member' | 'Agency Owner';
+export type AgencyStatus = 'Open to Work' | 'Busy' | 'Break/Vacation' | 'Holiday';
 
 export interface User {
   id: string;
   full_name: string;
+  role: UserRole;
+  agency_id?: string;
+  profile_pic?: string;
+  background_pic?: string;
+  theme_pic?: string;
   avatar_url?: string;
   background_img?: string;
   themeUrl?: string;
-  base_roles: RoleBase[];            // e.g. ['Core Member','Agency Owner']
-  agency_role: AgencyRole[];         // ['Owner', 'Manager', etc.]
   agency_name?: string;              // the agency user belongs to
   email: string;
   created_at: string;
@@ -19,8 +22,22 @@ export interface User {
 export interface Agency {
   id: string;
   name: string;
-  ownerId: string;
-  memberIds: string[];
+  owner_id: string;
+  status: AgencyStatus;
+  recent_activity: string[];
+  created_at: string;
+}
+
+export interface AgencyMember {
+  id: string;
+  agency_id: string;
+  user_id: string;
+  joined_at: string;
+}
+
+export interface AgencyWithMembers extends Agency {
+  members: User[];
+  owner: User;
 }
 
 export type ChannelType = 'GROUP' | 'AGENCY';

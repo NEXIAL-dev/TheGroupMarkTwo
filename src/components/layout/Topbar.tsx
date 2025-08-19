@@ -1,4 +1,5 @@
 // src/components/layout/Topbar.tsx
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/stores/useAuth';
 import { Bell, LogOut, Settings } from 'lucide-react';
 
@@ -20,9 +21,12 @@ export default function Topbar() {
         </button>
 
         {/* Settings */}
-        <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+        <Link 
+          to="/profile"
+          className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+        >
           <Settings size={20} />
-        </button>
+        </Link>
 
         {/* User Menu */}
         <div className="flex items-center gap-3">
