@@ -34,7 +34,7 @@ export const useAuth = create<AuthState>((set, get) => ({
   signIn: async (data) => {
     set({ isLoading: true, error: undefined });
     try {
-      const result = await AuthService.signIn(data);
+      const result:any = await AuthService.signIn(data);
       if (result.profile) {
         set({ user: result.profile, isLoading: false });
       }

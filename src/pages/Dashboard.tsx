@@ -40,7 +40,7 @@ export default function Dashboard() {
     },
     {
       name: 'My Agencies',
-      value: agencies.filter(a => a.ownerId === user?.id).length,
+      value: agencies.filter(a => a?.owner_id === user?.id).length,
       icon: Building,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
@@ -148,18 +148,18 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">My Agencies</h3>
           <div className="space-y-3">
-            {agencies.filter(a => a.ownerId === user?.id).slice(0, 3).map((agency) => (
+            {agencies.filter(a => a?.owner_id === user?.id).slice(0, 3).map((agency) => (
               <div key={agency.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
                   <Building className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="font-medium text-gray-900 text-sm">{agency.name}</p>
-                    <p className="text-xs text-gray-500">{agency.memberIds.length} members</p>
+                    <p className="text-xs text-gray-500">{agency?.memeber_id.length} members</p>
                   </div>
                 </div>
               </div>
             ))}
-            {agencies.filter(a => a.ownerId === user?.id).length === 0 && (
+            {agencies.filter(a => a?.owner_id === user?.id).length === 0 && (
               <p className="text-gray-500 text-center py-4">No agencies owned</p>
             )}
           </div>

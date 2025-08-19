@@ -1,42 +1,50 @@
-import { useState } from 'react';
-import { useAuth } from '@/stores/useAuth';
-import { useNavigate, Link } from 'react-router-dom';
-import { Building, Mail, Lock, User, Users, LogIn, Upload, X, Camera } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "@/stores/useAuth";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  Building,
+  Mail,
+  Lock,
+  User,
+  Users,
+  LogIn,
+  Upload,
+  X,
+  Camera,
+} from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    full_name: '',
-    base_roles: ['Core Member'] as string[],
+    email: "",
+    password: "",
+    confirmPassword: "",
+    full_name: "",
+    base_roles: ["Core Member"] as string[],
     agency_roles: [] as string[],
-    agency_name: '',
+    agency_name: "",
   });
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [profileImagePreview, setProfileImagePreview] = useState<string>('');
+  const [profileImagePreview, setProfileImagePreview] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { signUp, isLoading, error } = useAuth();
   const navigate = useNavigate();
 
-  const baseRoleOptions = [
-    'Core Member',
-    'Agency Owner',
-  ];
+  const baseRoleOptions = ["Core Member", "Agency Owner"];
 
   const agencyRoleOptions = [
-    'Owner',
-    'Manager', 
-    'CFO',
-    'HR',
-    'Admin',
-    'Member',
+    "Owner",
+    "Manager",
+    "CFO",
+    "HR",
+    "Admin",
+    "Member",
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       return;
     }
@@ -53,31 +61,31 @@ export default function Signup() {
 
     if (!error) {
       setShowSuccess(true);
-      setTimeout(() => navigate('/login'), 3000);
+      setTimeout(() => navigate("/login"), 3000);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleRoleToggle = (role: string, type: 'base' | 'agency') => {
-    if (type === 'base') {
-      setFormData(prev => ({
+  const handleRoleToggle = (role: string, type: "base" | "agency") => {
+    if (type === "base") {
+      setFormData((prev) => ({
         ...prev,
         base_roles: prev.base_roles.includes(role)
-          ? prev.base_roles.filter(r => r !== role)
-          : [...prev.base_roles, role]
+          ? prev.base_roles.filter((r) => r !== role)
+          : [...prev.base_roles, role],
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         agency_roles: prev.agency_roles.includes(role)
-          ? prev.agency_roles.filter(r => r !== role)
-          : [...prev.agency_roles, role]
+          ? prev.agency_roles.filter((r) => r !== role)
+          : [...prev.agency_roles, role],
       }));
     }
   };
@@ -96,15 +104,18 @@ export default function Signup() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleImageFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleImageFile = (file: File) => {
-    if (file.type.startsWith('image/')) {
+    console.log(file);
+
+    if (file.type.startsWith("image/")) {
       setProfileImage(file);
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfileImagePreview(e.target?.result as string);
@@ -115,7 +126,7 @@ export default function Signup() {
 
   const removeImage = () => {
     setProfileImage(null);
-    setProfileImagePreview('');
+    setProfileImagePreview("");
   };
 
   if (showSuccess) {
@@ -126,7 +137,9 @@ export default function Signup() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4">
               <Building className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Account Created!</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Account Created!
+            </h1>
             <p className="text-gray-600 mb-4">
               Please check your email to verify your account before signing in.
             </p>
@@ -148,7 +161,9 @@ export default function Signup() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4">
               <Building className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Join Business Hub</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Join Business Hub
+            </h1>
             <p className="text-gray-600">Create your account to get started</p>
           </div>
 
@@ -180,13 +195,13 @@ export default function Signup() {
                     <Camera className="w-8 h-8 text-gray-400" />
                   </div>
                 )}
-                
+
                 <div className="flex-1">
                   <div
                     className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${
-                      dragActive 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-300 hover:border-gray-400'
+                      dragActive
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 hover:border-gray-400"
                     }`}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
@@ -195,7 +210,7 @@ export default function Signup() {
                   >
                     <Upload className="w-6 h-6 text-gray-400 mx-auto mb-2" />
                     <p className="text-sm text-gray-600 mb-2">
-                      Drag and drop your photo here, or{' '}
+                      Drag and drop your photo here, or{" "}
                       <label className="text-blue-600 hover:text-blue-700 cursor-pointer font-medium">
                         browse
                         <input
@@ -217,7 +232,10 @@ export default function Signup() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="full_name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Full Name
                 </label>
                 <div className="relative">
@@ -236,7 +254,10 @@ export default function Signup() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <div className="relative">
@@ -266,14 +287,14 @@ export default function Signup() {
                     key={role}
                     className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                       formData.base_roles.includes(role)
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-300 hover:border-gray-400"
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={formData.base_roles.includes(role)}
-                      onChange={() => handleRoleToggle(role, 'base')}
+                      onChange={() => handleRoleToggle(role, "base")}
                       className="sr-only"
                     />
                     <Users className="w-4 h-4 mr-2" />
@@ -294,14 +315,14 @@ export default function Signup() {
                     key={role}
                     className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                       formData.agency_roles.includes(role)
-                        ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? "border-purple-500 bg-purple-50 text-purple-700"
+                        : "border-gray-300 hover:border-gray-400"
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={formData.agency_roles.includes(role)}
-                      onChange={() => handleRoleToggle(role, 'agency')}
+                      onChange={() => handleRoleToggle(role, "agency")}
                       className="sr-only"
                     />
                     <span className="text-sm font-medium">{role}</span>
@@ -312,8 +333,14 @@ export default function Signup() {
 
             {/* Agency Name */}
             <div>
-              <label htmlFor="agency_name" className="block text-sm font-medium text-gray-700 mb-2">
-                Agency Name {formData.base_roles.includes('Agency Owner') ? '(Recommended)' : '(Optional)'}
+              <label
+                htmlFor="agency_name"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Agency Name{" "}
+                {formData.base_roles.includes("Agency Owner")
+                  ? "(Recommended)"
+                  : "(Optional)"}
               </label>
               <div className="relative">
                 <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -331,7 +358,10 @@ export default function Signup() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -350,7 +380,10 @@ export default function Signup() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -369,9 +402,11 @@ export default function Signup() {
               </div>
             </div>
 
-            {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-              <p className="text-sm text-red-600">Passwords do not match</p>
-            )}
+            {formData.password &&
+              formData.confirmPassword &&
+              formData.password !== formData.confirmPassword && (
+                <p className="text-sm text-red-600">Passwords do not match</p>
+              )}
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -381,7 +416,11 @@ export default function Signup() {
 
             <button
               type="submit"
-              disabled={isLoading || formData.password !== formData.confirmPassword || formData.base_roles.length === 0}
+              disabled={
+                isLoading ||
+                formData.password !== formData.confirmPassword ||
+                formData.base_roles.length === 0
+              }
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
             >
               {isLoading ? (
@@ -398,8 +437,11 @@ export default function Signup() {
           {/* Sign In Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
                 Sign in here
               </Link>
             </p>

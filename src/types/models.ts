@@ -26,6 +26,7 @@ export interface Agency {
   status: AgencyStatus;
   recent_activity: string[];
   created_at: string;
+  memeber_id: string[];
 }
 
 export interface AgencyMember {
