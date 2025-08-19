@@ -1,8 +1,8 @@
 // src/pages/AgencyDetail.tsx
-import { useParams } from 'react-router-dom';
-import { useAgencies } from '@/stores/useAgencies';
-import { useEffect } from 'react';
-import { Building, Users, Calendar } from 'lucide-react';
+import { useParams } from "react-router-dom";
+import { useAgencies } from "@/stores/useAgencies";
+import { useEffect } from "react";
+import { Building, Users, Calendar } from "lucide-react";
 
 export default function AgencyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -12,7 +12,7 @@ export default function AgencyDetail() {
     loadAgencies();
   }, [loadAgencies]);
 
-  const agency = agencies.find(a => a.id === id);
+  const agency = agencies.find((a) => a.id === id);
 
   if (!agency) {
     return (
@@ -47,7 +47,9 @@ export default function AgencyDetail() {
             <Users className="w-5 h-5 text-blue-600" />
             <h3 className="font-semibold text-gray-900">Members</h3>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{agency.memberIds.length}</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {agency.memeber_id.length}
+          </p>
           <p className="text-sm text-gray-500">Active members</p>
         </div>
 
@@ -57,7 +59,7 @@ export default function AgencyDetail() {
             <h3 className="font-semibold text-gray-900">Owner</h3>
           </div>
           <p className="text-sm text-gray-600">Agency Owner ID:</p>
-          <p className="font-mono text-sm">{agency.ownerId}</p>
+          <p className="font-mono text-sm">{agency.owner_id}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
@@ -73,12 +75,16 @@ export default function AgencyDetail() {
 
       {/* Recent Activity */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Recent Activity
+        </h3>
         <div className="space-y-4">
-          <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+          {/* <div className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
             <div>
-              <p className="text-sm text-gray-900">New client onboarding completed</p>
+              <p className="text-sm text-gray-900">
+                New client onboarding completed
+              </p>
               <p className="text-xs text-gray-500">2 hours ago</p>
             </div>
           </div>
@@ -95,7 +101,20 @@ export default function AgencyDetail() {
               <p className="text-sm text-gray-900">Team meeting scheduled</p>
               <p className="text-xs text-gray-500">3 days ago</p>
             </div>
-          </div>
+          </div> */}
+          {agency.recent_activity.map((elem, index) => {
+            return (
+              <div key={index} className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+                <div className={`w-2 h-2 bg-orange-500 rounded-full mt-2`}></div>
+                <div>
+                  <p className="text-sm text-gray-900">
+                    {elem}
+                  </p>
+                  <p className="text-xs text-gray-500">3 days ago</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

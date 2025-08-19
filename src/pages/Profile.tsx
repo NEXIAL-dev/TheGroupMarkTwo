@@ -15,6 +15,7 @@ import {
   Save,
   X
 } from 'lucide-react';
+import RoleBadge from '@/components/ui/RoleBadge';
 
 export default function Profile() {
   const { user, setUser } = useAuth();
@@ -343,7 +344,7 @@ export default function Profile() {
                 <h4 className="font-medium text-gray-900 mb-2">{agency.name}</h4>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-sm text-gray-600">Status:</span>
-                  {user.role === 'Agency Owner' ? (
+                  {user.agency_roles?.includes('Agency Owner') ? (
                     <select
                       value={agency.status}
                       onChange={(e) => handleUpdateAgencyStatus(e.target.value)}
@@ -388,7 +389,7 @@ export default function Profile() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h5 className="font-medium text-gray-900">Recent Activity</h5>
-                {user.role === 'Agency Owner' && (
+                {user?.agency_roles?.includes('Agency Owner') && (
                   <button
                     onClick={() => {
                       const activity = prompt('Enter new activity:');

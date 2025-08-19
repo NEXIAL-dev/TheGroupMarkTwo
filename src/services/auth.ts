@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase';
-import { User } from '@/types/models';
+import { supabase } from "@/lib/supabase";
+import { User } from "@/types/models";
 
 export interface SignUpData {
   email: string;
@@ -16,6 +16,31 @@ export interface SignInData {
   password: string;
 }
 
+const uploadProfileImage = async (file: File, userId: string) => {
+  if (!file) return null;
+
+  // unique filename (user id + timestamp to avoid collisions)
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${userId}_${Date.now()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error } = await supabase.storage
+    .from("profiles")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) {
+    console.error("Image upload error:", error.message);
+    return null;
+  }
+
+  // Get public URL
+  const { data } = supabase.storage.from("profiles").getPublicUrl(filePath);
+  return data.publicUrl;
+};
+
 export const AuthService = {
   async signUp(data: SignUpData) {
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -24,7 +49,7 @@ export const AuthService = {
       options: {
         data: {
           full_name: data.full_name,
-          base_roles: data.base_roles || ['Core Member'],
+          base_roles: data.base_roles || ["Core Member"],
           agency_roles: data.agency_roles || [],
           agency_name: data.agency_name,
         },
@@ -36,9 +61,9 @@ export const AuthService = {
     // Upload profile image if provided
     if (data.profile_image && authData.user) {
       try {
-        await this.uploadProfileImage(authData.user.id, data.profile_image);
+        await uploadProfileImage(data.profile_image, authData.user.id);
       } catch (error) {
-        console.error('Error uploading profile image:', error);
+        console.error("Error uploading profile image:", error);
         // Don't fail signup if image upload fails
       }
     }
@@ -48,10 +73,11 @@ export const AuthService = {
   },
 
   async signIn(data: SignInData) {
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
     if (authError) throw authError;
 
@@ -71,22 +97,22 @@ export const AuthService = {
 
   async getProfile(userId: string): Promise<User | null> {
     const { data, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', userId)
+      .from("user_profiles")
+      .select("*")
+      .eq("id", userId)
       .single();
 
     if (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile:", error);
       return null;
     }
 
     // Get email from auth.users
     const { data: authUser } = await supabase.auth.getUser();
-    
+
     return {
       ...data,
-      email: authUser.user?.email || '',
+      email: authUser.user?.email || "",
       profile_pic: data.profile_pic || data.avatar_url,
       background_pic: data.background_pic || data.background_img,
       theme_pic: data.theme_pic || data.theme_url,
@@ -95,9 +121,9 @@ export const AuthService = {
 
   async updateProfile(userId: string, updates: Partial<User>) {
     const { data, error } = await supabase
-      .from('user_profiles')
+      .from("user_profiles")
       .update(updates)
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .single();
 
@@ -106,30 +132,12 @@ export const AuthService = {
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) return null;
-    
+
     return this.getProfile(user.id);
-  },
-
-  async uploadProfileImage(userId: string, file: File) {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}/profile_${Date.now()}.${fileExt}`;
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('profiles')
-      .upload(fileName, file);
-
-    if (uploadError) throw uploadError;
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('profiles')
-      .getPublicUrl(fileName);
-
-    // Update user profile with new image URL
-    await this.updateProfile(userId, { profile_pic: publicUrl });
-
-    return publicUrl;
   },
 };
