@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 interface AuthState {
   user?: User;
   isLoading: boolean;
+  isInitialized: boolean;
   error?: string;
   signUp: (data: SignUpData) => Promise<void>;
   signIn: (data: SignInData) => Promise<void>;
@@ -14,11 +15,13 @@ interface AuthState {
   logout: () => void;
   setUser: (user: User) => void;
   initialize: () => Promise<void>;
+  clearError: () => void;
 }
 
 export const useAuth = create<AuthState>((set, get) => ({
   user: undefined,
   isLoading: false,
+  isInitialized: false,
   error: undefined,
   
   signUp: async (data) => {
@@ -44,11 +47,13 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   signOut: async () => {
+    set({ isLoading: true });
     try {
       await AuthService.signOut();
-      set({ user: undefined });
+      set({ user: undefined, isLoading: false, error: undefined });
     } catch (error) {
       console.error('Sign out error:', error);
+      set({ isLoading: false });
     }
   },
 
@@ -59,24 +64,43 @@ export const useAuth = create<AuthState>((set, get) => ({
   setUser: (user) => set({ user }),
 
   initialize: async () => {
-    set({ isLoading: true });
+    if (get().isInitialized) return;
+    
+    set({ isLoading: true, error: undefined });
     try {
+      // Check if there's an active session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        set({ user: undefined, isLoading: false, isInitialized: true });
+        return;
+      }
+
       const user = await AuthService.getCurrentUser();
-      set({ user: user || undefined, isLoading: false });
+      set({ user: user || undefined, isLoading: false, isInitialized: true });
     } catch (error) {
       console.error('Auth initialization error:', error);
-      set({ isLoading: false });
+      set({ user: undefined, isLoading: false, isInitialized: true, error: undefined });
     }
   },
+
+  clearError: () => set({ error: undefined }),
 }));
 
 // Listen for auth state changes
 supabase.auth.onAuthStateChange(async (event, session) => {
-  const { initialize } = useAuth.getState();
+  const { initialize, isInitialized } = useAuth.getState();
   
   if (event === 'SIGNED_IN' && session?.user) {
-    await initialize();
+    // Only reinitialize if we're already initialized to avoid loops
+    if (isInitialized) {
+      const user = await AuthService.getCurrentUser();
+      useAuth.setState({ user: user || undefined, isLoading: false });
+    }
   } else if (event === 'SIGNED_OUT') {
-    useAuth.setState({ user: undefined });
+    useAuth.setState({ user: undefined, isLoading: false, error: undefined });
+  } else if (event === 'TOKEN_REFRESHED') {
+    // Handle token refresh silently
+    console.log('Token refreshed');
   }
 });

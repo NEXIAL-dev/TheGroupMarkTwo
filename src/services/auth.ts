@@ -67,7 +67,9 @@ export const AuthService = {
     // Fetch user profile
     if (authData.user) {
       const profile = await this.getProfile(authData.user.id);
-      return { ...authData, profile };
+      if (profile) {
+        return { ...authData, profile };
+      }
     }
 
     return authData;
@@ -91,7 +93,12 @@ export const AuthService = {
     }
 
     // Get email from auth.users
-    const { data: authUser } = await supabase.auth.getUser();
+    const { data: authUser, error: authError } = await supabase.auth.getUser();
+    
+    if (authError) {
+      console.error("Error fetching auth user:", authError);
+      return null;
+    }
 
     return {
       ...data,
@@ -115,11 +122,12 @@ export const AuthService = {
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-    if (!user) return null;
+    if (error || !user) {
+      console.error("Error getting current user:", error);
+      return null;
+    }
 
     return this.getProfile(user.id);
   },
